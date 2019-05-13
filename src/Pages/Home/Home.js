@@ -22,20 +22,25 @@ class Home extends React.Component {
   }
 
   getData = async () => {
-    // //Get client side token
-    // let JWT = await fetch("https://trefle.io/api/auth/claim?token=R0dGTXdVcng3Nk9DRk5DdlRrWWNNdz09&origin=localhost");
-    // JWT = await JWT.json();
+    /*
+    
+    ***Was trying to show a sample fetch, but their API is giving a 404 on token requests?***
 
-    // //Get ferns
-    // let res = await fetch(
-    //   `https://trefle.io/api/plants?q=fern&token=${JWT.token}`
-    // );
-    // if (res.ok) {
-    //     let plants = await res.json();
-    //   this.setState({
-    //     plants
-    //   });
-    // }
+    //Get client side token
+    let JWT = await fetch("https://trefle.io/api/auth/claim?token=R0dGTXdVcng3Nk9DRk5DdlRrWWNNdz09&origin=localhost");
+    JWT = await JWT.json();
+
+    //Get ferns
+    let res = await fetch(
+      `https://trefle.io/api/plants?q=fern&token=${JWT.token}`
+    );
+    if (res.ok) {
+        let plants = await res.json();
+      this.setState({
+        plants
+      });
+    }
+    */
     this.setState({
       plants: ferns
     });

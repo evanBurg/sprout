@@ -7,7 +7,6 @@ import {
   Navigator
 } from 'react-onsenui';
 
-
 import Home from './Pages/Home/Home';
 
 class Tabs extends React.Component {

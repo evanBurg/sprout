@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Page, Card, BackButton, Toolbar } from "react-onsenui";
 import {capitalize} from '../../util'
+
 class PlantCard extends Component {
   renderToolbar = title => {
     return (
