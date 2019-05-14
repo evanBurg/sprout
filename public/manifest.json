@@ -1,14 +1,14 @@
 {
-  "short_name": "blossom.io",
-  "name": "blossom.io",
+  "short_name": "sprout.io",
+  "name": "sprout.io",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "/sprout/img/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo-icon-transparent.png",
+      "src": "/sprout/img/logo-icon-transparent.png",
       "sizes": "512x512 64x64 32x32 24x24 16x16",
       "type": "image/png"
     }

@@ -2,7 +2,9 @@
   "name": "withr",
   "version": "0.1.0",
   "private": true,
+  "homepage" : "https://fernway.ca/sprout/",
   "dependencies": {
+    "express": "^4.16.4",
     "onsenui": "^2.10.8",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -10,7 +12,8 @@
     "react-scripts": "3.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
+    "dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
