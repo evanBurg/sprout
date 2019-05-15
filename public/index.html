@@ -12,6 +12,9 @@
     <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
     <script>
       window.db = new Dexie("sprout.io");
+      window.db.version(1).stores({
+        rooms: "++id, name, *tags"
+    });
     </script>
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/img/logo-icon.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Page, Card, BackButton, Toolbar, ProgressBar } from "react-onsenui";
+import { Page, Card, BackButton, Toolbar, ProgressBar, Button } from "react-onsenui";
 import { capitalize } from "../../util";
 
 class AddPlantPage extends Component {
@@ -10,15 +10,14 @@ class AddPlantPage extends Component {
   };
 
   componentDidMount = async () => {
-    let { jwt, getToken } = this.props;
-
-    await getToken();
+    let { jwt, getToken, plant } = this.props;
 
     let res = await fetch(
-      `https://trefle.io/api/plants?q=fern&token=${jwt.token}`
+      `https://fernway-api.herokuapp.com/plant/${plant.id}`
     );
     if (res.ok) {
       let details = await res.json();
+      console.log(details)
       this.setState({
         details,
         loading: false
@@ -42,7 +41,7 @@ class AddPlantPage extends Component {
   };
   render() {
     let { plant } = this.props;
-    let { details, loading } = this.state;
+    let { loading, details } = this.state;
     let name = capitalize(plant.common_name);
 
     if (!loading) {
@@ -50,10 +49,10 @@ class AddPlantPage extends Component {
         <Page renderToolbar={() => this.renderToolbar(name)}>
           <Card>
             <h1>{name}</h1>
-            <p>{plant.id}</p>
-            <p>{plant.slug}</p>
+            {details.duration && <p>{capitalize(details.duration)}</p>}
             <p>{plant.scientific_name}</p>
-            <p>{plant.link}</p>
+            <p>{details.family.name}</p>
+            <Button>Add to Home</Button>
           </Card>
         </Page>
       );

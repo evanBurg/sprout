@@ -6,7 +6,7 @@ import {
   ListItem,
   Input,
 } from "react-onsenui";
-import { capitalize, token, site } from "../../util";
+import { capitalize } from "../../util";
 import AddPlantPage from './AddPlantPage';
 
 class AddPlants extends Component {
@@ -26,22 +26,19 @@ class AddPlants extends Component {
   };
 
   getToken = async () => {
-    let { jwt } = this.state;
+    //let { jwt } = this.state;
 
-    let expiry;
-    if(jwt)
-        expiry = new Date(jwt.expiration * 1000);
-    else{
-        expiry = new Date();
-        expiry.setDate( expiry.getDate() - 1 )
-    }
+    // let expiry;
+    // if(jwt)
+    //     expiry = new Date(jwt.expiration * 1000);
+    // else{
+    //     expiry = new Date();
+    //     expiry.setDate( expiry.getDate() - 1 )
+    // }
 
-    let today = new Date();
-    if (expiry.getTime() < today.getTime()) {
-      let jwt = await fetch(
-        `https://trefle.io/api/auth/claim?token=${token}&origin=${site}`,
-        { method: "POST" }
-      );
+    // let today = new Date();
+    // if (expiry.getTime() < today.getTime()) {
+      let jwt = await fetch("https://fernway-api.herokuapp.com/local");
 
       if (jwt.ok) {
         jwt = await jwt.json();
@@ -53,13 +50,12 @@ class AddPlants extends Component {
           console.error("There was an issue fetching the JWT token...");
           console.error(await jwt.text());
       }
-    }
+    //}
 
     return jwt;
   };
 
   getPlants = async (query, jwt) => {
-    console.log(jwt);
     let plants = [];
     if(query)
         plants = await fetch(`https://trefle.io/api/plants?q=${query}&token=${jwt.token}&page_size=${100}`)
@@ -116,7 +112,7 @@ class AddPlants extends Component {
           </ListItem>
         </List>
 
-        <div
+        {this.state.plants.length < 1 && <div
           style={{
             width: "50%",
             height: "50%",
@@ -131,7 +127,7 @@ class AddPlants extends Component {
             class="ons-icon ion-ios-close ons-icon--ion"
             modifier="material"
           />
-        </div>
+        </div>}
 
         <List
           dataSource={[...this.state.plants]}

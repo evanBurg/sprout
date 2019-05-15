@@ -2,8 +2,10 @@
   "name": "withr",
   "version": "0.1.0",
   "private": true,
-  "homepage" : "https://fernway.ca/sprout/",
+  "homepage": "https://fernway.ca/sprout/",
   "dependencies": {
+    "axios": "^0.18.0",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "onsenui": "^2.10.8",
     "react": "^16.8.6",
