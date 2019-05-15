@@ -8,13 +8,18 @@ import {
 } from 'react-onsenui';
 
 import Home from './Pages/Home/Home';
+import AddPlants from './Pages/Add Plants/AddPlants';
 
 class Tabs extends React.Component {
   renderTabs = () => {
     return [
       {
         content: <Home key="home" navigator={this.props.navigator} />,
-        tab: <Tab key="home" label="Home" icon="ion-ios-home-outline" />
+        tab: <Tab key="home" label="Home" icon="ion-ios-home" />
+      },
+      {
+        content: <AddPlants key="plants" navigator={this.props.navigator} />,
+        tab: <Tab key="plants" label="Plants" icon="ion-leaf" />
       },
     ];
   }
