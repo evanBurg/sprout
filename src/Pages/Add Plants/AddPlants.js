@@ -41,7 +41,7 @@ class AddPlants extends Component {
 
     // let today = new Date();
     // if (expiry.getTime() < today.getTime()) {
-    let jwt = await fetch("https://fernway-api.herokuapp.com/local");
+    let jwt = await fetch("https://fernway-api.herokuapp.com/token");
 
     if (jwt.ok) {
       jwt = await jwt.json();
