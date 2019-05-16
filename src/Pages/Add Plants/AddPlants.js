@@ -10,6 +10,7 @@ import {
   ProgressBar
 } from "react-onsenui";
 import { capitalize } from "../../util";
+import AddPlantPage from "./AddPlantPage";
 
 class AddPlants extends Component {
   constructor(props) {
@@ -109,7 +110,7 @@ class AddPlants extends Component {
   gotoPlant = (component, key, plant) => {
     let { jwt } = this.state;
     this.props.navigator.pushPage({
-      comp: component,
+      comp: AddPlantPage,
       props: {
         key,
         plant,
@@ -144,7 +145,7 @@ class AddPlants extends Component {
           renderRow={plant => {
             if (plant.common_name)
               return (
-                <ListItem key={plant.id} tappable>
+                <ListItem key={plant.id} tappable onClick={this.gotoPlant(null, plant.id, plant)}>
                   {capitalize(plant.common_name)}
                 </ListItem>
               );
