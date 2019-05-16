@@ -38,13 +38,14 @@ class AddPlants extends Component {
 
     let today = new Date();
     if (!jwt || expiry.getTime() < today.getTime()) {
-      jwt = await getToken(development ? 'http://localhost' : 'https://fernway.ca');
+      jwt = await getToken(development ? 'http://localhost:3000' : 'https://fernway.ca');
     }
 
     this.setState({ loading: false, jwt });
   };
 
-  getPlants = async (query, jwt) => {
+  getPlants = async (query) => {
+    let {jwt} = this.state;
     this.setState({ loading: true });
     let plants = [];
     if (query)
