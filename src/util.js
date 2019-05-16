@@ -3,7 +3,7 @@ exports.token = "R0dGTXdVcng3Nk9DRk5DdlRrWWNNdz09";
 const api = "https://fernway-api.herokuapp.com";
 exports.api = api;
 
-exports.development = false;
+exports.development = true;
 
 exports.capitalize = text => {
   return text
@@ -11,9 +11,9 @@ exports.capitalize = text => {
     .split(" ")
     .map(s => s.charAt(0).toUpperCase() + s.substring(1))
     .join(" ");
-  }
+};
 
-exports.getToken = async (origin) => {
+exports.getToken = async origin => {
   let jwt = await fetch(`${api}/token?origin=${origin}`);
 
   if (jwt.ok) {

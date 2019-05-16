@@ -6,9 +6,9 @@ import {
   ListItem,
   ListHeader,
   Fab,
-  Icon,
+  Icon
 } from "react-onsenui";
-import ons from 'onsenui';
+import ons from "onsenui";
 
 class Home extends React.Component {
   state = {
@@ -21,13 +21,6 @@ class Home extends React.Component {
         <div className="center">{title}</div>
       </Toolbar>
     );
-  };
-
-  gotoPlant = (component, key, plant) => {
-    this.props.navigator.pushPage({
-      comp: component,
-      props: { key, plant, navigator: this.props.navigator }
-    });
   };
 
   getData = async () => {
@@ -43,8 +36,8 @@ class Home extends React.Component {
 
   createRoom = () => {
     ons.notification.prompt({
-      message: 'What is the name of the room?',
-      callback: (newRoomName) => {
+      message: "What is the name of the room?",
+      callback: newRoomName => {
         let newRoom = { name: newRoomName, plants: [] };
         window.db.rooms.add(newRoom);
         this.setState({ rooms: [...this.state.rooms, newRoom] });
@@ -52,15 +45,17 @@ class Home extends React.Component {
     });
   };
 
-  deleteRoom = async (id) => {
+  deleteRoom = async id => {
     ons.notification.confirm({
-      message: 'Are you sure?',
-      callback: async () => {
-        await window.db.rooms.delete(id)
-        this.getData()
+      message: "Are you sure?",
+      callback: async dlt => {
+        if (dlt) {
+          await window.db.rooms.delete(id);
+          this.getData();
+        }
       }
     });
-  }
+  };
 
   render() {
     return (
@@ -69,15 +64,15 @@ class Home extends React.Component {
           renderHeader={() => <ListHeader>Rooms</ListHeader>}
           dataSource={this.state.rooms}
           renderRow={room => {
-              return (
-                <ListItem
-                  key={room.id}
-                  tappable
-                  onClick={() => this.deleteRoom(room.id)}
-                >
-                  {room.name}
-                </ListItem>
-              )
+            return (
+              <ListItem
+                key={room.id}
+                tappable
+                onClick={() => this.deleteRoom(room.id)}
+              >
+                {room.name}
+              </ListItem>
+            );
           }}
         />
 
