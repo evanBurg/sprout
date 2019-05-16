@@ -1,4 +1,9 @@
-let {api} = require("./constants")
+exports.token = "R0dGTXdVcng3Nk9DRk5DdlRrWWNNdz09";
+
+const api = "https://fernway-api.herokuapp.com";
+exports.api = api;
+
+exports.development = false;
 
 exports.capitalize = text => {
   return text

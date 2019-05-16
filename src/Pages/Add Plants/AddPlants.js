@@ -9,8 +9,7 @@ import {
   Button,
   ProgressBar
 } from "react-onsenui";
-import { capitalize, getToken } from "../../util";
-import { development } from "../../constants";
+import { capitalize, getToken, development } from "../../util";
 import AddPlantPage from "./AddPlantPage";
 
 class AddPlants extends Component {
