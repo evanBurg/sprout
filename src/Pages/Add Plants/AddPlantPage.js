@@ -51,7 +51,7 @@ class AddPlantPage extends Component {
             <h1>{name}</h1>
             {details.duration && <p>{capitalize(details.duration)}</p>}
             <p>{plant.scientific_name || ""}</p>
-            {details && details.family && <p>details.family.name</p>}
+            {details && details.family && <p>{details.family.name}</p>}
             <Button>Add to Home</Button>
           </Card>
         </Page>

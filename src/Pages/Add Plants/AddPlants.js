@@ -113,6 +113,11 @@ class AddPlants extends Component {
           <ListItem>
             <div className="left">
               <SearchInput
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    this.search();
+                  }
+                }}
                 value={this.state.query}
                 onChange={this.changeQuery}
               />
