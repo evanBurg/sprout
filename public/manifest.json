@@ -3,12 +3,12 @@
   "name": "sprout.io",
   "icons": [
     {
-      "src": "/sprout/img/favicon.ico",
+      "src": "/img/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "/sprout/img/logo-icon-transparent.png",
+      "src": "/img/logo-icon-transparent.png",
       "sizes": "512x512 64x64 32x32 24x24 16x16",
       "type": "image/png"
     }

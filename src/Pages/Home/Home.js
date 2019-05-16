@@ -1,48 +1,40 @@
 import React from "react";
-import ferns from "./ferns.json";
-import { Page, Toolbar, List, ListItem, ListHeader } from "react-onsenui";
-import PlantCard from "./PlantCard"
-import {capitalize} from '../../util'
+import {
+  Page,
+  Toolbar,
+  List,
+  ListItem,
+  ListHeader,
+  Fab,
+  Icon,
+} from "react-onsenui";
+import ons from 'onsenui';
 
 class Home extends React.Component {
   state = {
-    plants: []
+    rooms: []
   };
 
-  renderToolbar = (title) => {
+  renderToolbar = title => {
     return (
       <Toolbar>
         <div className="center">{title}</div>
       </Toolbar>
     );
-  }
+  };
 
   gotoPlant = (component, key, plant) => {
-    this.props.navigator.pushPage({comp: component, props: { key, plant, navigator: this.props.navigator }});
-  }
+    this.props.navigator.pushPage({
+      comp: component,
+      props: { key, plant, navigator: this.props.navigator }
+    });
+  };
 
   getData = async () => {
-    /*
-    
-    ***Was trying to show a sample fetch, but their API is giving a 404 on token requests?***
-
-    //Get client side token
-    let JWT = await fetch("https://trefle.io/api/auth/claim?token=R0dGTXdVcng3Nk9DRk5DdlRrWWNNdz09&origin=localhost");
-    JWT = await JWT.json();
-
-    //Get ferns
-    let res = await fetch(
-      `https://trefle.io/api/plants?q=fern&token=${JWT.token}`
-    );
-    if (res.ok) {
-        let plants = await res.json();
-      this.setState({
-        plants
-      });
-    }
-    */
+    let rooms = await window.db.rooms.toArray();
+    console.log(rooms)
     this.setState({
-      plants: ferns
+      rooms
     });
   };
 
@@ -50,22 +42,38 @@ class Home extends React.Component {
     this.getData();
   }
 
+  createRoom = () => {
+    ons.notification.prompt({
+      message: 'What is the name of the room?',
+      callback: (newRoomName) => {
+        let newRoom = { name: newRoomName, plants: [] };
+        window.db.rooms.add(newRoom);
+        this.setState({ rooms: [...this.state.rooms, newRoom] });
+      }
+    });
+  };
+
   render() {
     return (
-      <Page renderToolbar={() => this.renderToolbar('Home')}>
+      <Page renderToolbar={() => this.renderToolbar("Home")}>
         <List
-          renderHeader={() => <ListHeader>Ferns</ListHeader>}
-          dataSource={this.state.plants}
-          renderRow={plant => {
-            if (plant.common_name)
+          renderHeader={() => <ListHeader>Rooms</ListHeader>}
+          dataSource={this.state.rooms}
+          renderRow={room => {
               return (
-                <ListItem key={plant.id} tappable onClick={() => this.gotoPlant(PlantCard, `page-${plant.id}`, plant)}>
-                  {capitalize(plant.common_name)}
+                <ListItem
+                  key={room.id}
+                  tappable
+                >
+                  {room.name}
                 </ListItem>
-              );
-            else return <React.Fragment key={plant.id} />;
+              )
           }}
         />
+
+        <Fab position="bottom right" onClick={this.createRoom}>
+          <Icon icon="fa-plus" size={26} style={{ verticalAlign: "middle" }} />
+        </Fab>
       </Page>
     );
   }

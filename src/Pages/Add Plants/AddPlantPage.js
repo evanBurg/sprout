@@ -10,7 +10,7 @@ class AddPlantPage extends Component {
   };
 
   componentDidMount = async () => {
-    let { jwt, getToken, plant } = this.props;
+    let { plant } = this.props;
 
     let res = await fetch(
       `https://fernway-api.herokuapp.com/plant/${plant.id}`

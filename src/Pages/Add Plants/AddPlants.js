@@ -4,10 +4,12 @@ import {
   Toolbar,
   List,
   ListItem,
-  Input,
+  ListHeader,
+  SearchInput,
+  Button,
+  ProgressBar
 } from "react-onsenui";
 import { capitalize } from "../../util";
-import AddPlantPage from './AddPlantPage';
 
 class AddPlants extends Component {
   constructor(props) {
@@ -16,16 +18,17 @@ class AddPlants extends Component {
     this.state = {
       jwt: undefined,
       plants: [],
-      query: ""
+      query: "",
+      loading: false
     };
   }
 
   componentDidMount = async () => {
     await this.getToken();
-    this.getPlants(false, await this.getToken());
   };
 
   getToken = async () => {
+    this.setState({ loading: true });
     //let { jwt } = this.state;
 
     // let expiry;
@@ -38,51 +41,61 @@ class AddPlants extends Component {
 
     // let today = new Date();
     // if (expiry.getTime() < today.getTime()) {
-      let jwt = await fetch("https://fernway-api.herokuapp.com/local");
+    let jwt = await fetch("https://fernway-api.herokuapp.com/local");
 
-      if (jwt.ok) {
-        jwt = await jwt.json();
+    if (jwt.ok) {
+      jwt = await jwt.json();
 
-        await this.setState({
-          jwt
-        });
-      }else{
-          console.error("There was an issue fetching the JWT token...");
-          console.error(await jwt.text());
-      }
+      await this.setState({
+        jwt
+      });
+    } else {
+      console.error("There was an issue fetching the JWT token...");
+      console.error(await jwt.text());
+    }
     //}
 
+    this.setState({ loading: false });
     return jwt;
   };
 
   getPlants = async (query, jwt) => {
+    this.setState({ loading: true });
     let plants = [];
-    if(query)
-        plants = await fetch(`https://trefle.io/api/plants?q=${query}&token=${jwt.token}&page_size=${100}`)
+    if (query)
+      plants = await fetch(
+        `https://trefle.io/api/plants?q=${query}&token=${
+          jwt.token
+        }&page_size=${100}`
+      );
     else
-        plants = await fetch(`https://trefle.io/api/plants?token=${jwt.token}&page_size=${100}`)
+      plants = await fetch(
+        `https://trefle.io/api/plants?token=${jwt.token}&page_size=${100}`
+      );
 
-    if(plants.ok){
-        plants = await plants.json();
+    if (plants.ok) {
+      plants = await plants.json();
 
-        this.setState({
-            plants
-        });
-    }else{
-        console.error("There was an issue fetching the plants...");
-        console.error(await plants.text());
+      this.setState({
+        plants
+      });
+    } else {
+      console.error("There was an issue fetching the plants...");
+      console.error(await plants.text());
 
-        this.setState({
-            plants: []
-        });
+      this.setState({
+        plants: []
+      });
     }
-
+    this.setState({ loading: false });
   };
 
   changeQuery = async e => {
     this.setState({ query: e.target.value });
+  };
 
-    this.getPlants(e.target.value, await this.getToken());
+  search = async () => {
+    this.getPlants(this.state.query, await this.getToken());
   };
 
   renderToolbar = title => {
@@ -94,47 +107,44 @@ class AddPlants extends Component {
   };
 
   gotoPlant = (component, key, plant) => {
-    let {jwt} = this.state;
-    this.props.navigator.pushPage({comp: component, props: { key, plant, jwt, getToken: this.getToken, navigator: this.props.navigator }});
-  }
+    let { jwt } = this.state;
+    this.props.navigator.pushPage({
+      comp: component,
+      props: {
+        key,
+        plant,
+        jwt,
+        getToken: this.getToken,
+        navigator: this.props.navigator
+      }
+    });
+  };
 
   render() {
     return (
       <Page renderToolbar={() => this.renderToolbar("Plants")}>
+        {this.state.loading && <ProgressBar indeterminate />}
         <List>
           <ListItem>
-            <Input
-              value={this.state.query}
-              style={{ width: "100%" }}
-              onChange={this.changeQuery}
-              placeholder="Search plants..."
-            />
+            <div className="left">
+              <SearchInput
+                value={this.state.query}
+                onChange={this.changeQuery}
+              />
+            </div>
+            <div className="right">
+              <Button onClick={this.search}>Search</Button>
+            </div>
           </ListItem>
         </List>
-
-        {this.state.plants.length < 1 && <div
-          style={{
-            width: "50%",
-            height: "50%",
-            margin: "auto",
-            textAlign: "center",
-            marginTop: "6rem"
-          }}
-        >
-          <ons-icon
-            style={{ fontSize: "8em", color: "#b3b3b3" }}
-            icon="ion-ios-close"
-            class="ons-icon ion-ios-close ons-icon--ion"
-            modifier="material"
-          />
-        </div>}
-
         <List
-          dataSource={[...this.state.plants]}
+          style={{maxHeight: '-webkit-fill-available', overflowY: 'auto'}}
+          renderHeader={() => <ListHeader>Results</ListHeader>}
+          dataSource={this.state.plants}
           renderRow={plant => {
             if (plant.common_name)
               return (
-                <ListItem key={plant.id} tappable onClick={() => this.gotoPlant(AddPlantPage, `page-${plant.id}`, plant)}>
+                <ListItem key={plant.id} tappable>
                   {capitalize(plant.common_name)}
                 </ListItem>
               );
