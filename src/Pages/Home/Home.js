@@ -32,7 +32,6 @@ class Home extends React.Component {
 
   getData = async () => {
     let rooms = await window.db.rooms.toArray();
-    console.log(rooms)
     this.setState({
       rooms
     });
@@ -53,6 +52,16 @@ class Home extends React.Component {
     });
   };
 
+  deleteRoom = async (id) => {
+    ons.notification.confirm({
+      message: 'Are you sure?',
+      callback: async () => {
+        await window.db.rooms.delete(id)
+        this.getData()
+      }
+    });
+  }
+
   render() {
     return (
       <Page renderToolbar={() => this.renderToolbar("Home")}>
@@ -64,6 +73,7 @@ class Home extends React.Component {
                 <ListItem
                   key={room.id}
                   tappable
+                  onClick={() => this.deleteRoom(room.id)}
                 >
                   {room.name}
                 </ListItem>

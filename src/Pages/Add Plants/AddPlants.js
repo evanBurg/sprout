@@ -9,7 +9,8 @@ import {
   Button,
   ProgressBar
 } from "react-onsenui";
-import { capitalize } from "../../util";
+import { capitalize, getToken } from "../../util";
+import { development } from "../../constants";
 import AddPlantPage from "./AddPlantPage";
 
 class AddPlants extends Component {
@@ -25,39 +26,22 @@ class AddPlants extends Component {
   }
 
   componentDidMount = async () => {
-    await this.getToken();
+    await this.refreshToken();
   };
 
-  getToken = async () => {
+  refreshToken = async () => {
     this.setState({ loading: true });
-    //let { jwt } = this.state;
+    let { jwt } = this.state;
 
-    // let expiry;
-    // if(jwt)
-    //     expiry = new Date(jwt.expiration * 1000);
-    // else{
-    //     expiry = new Date();
-    //     expiry.setDate( expiry.getDate() - 1 )
-    // }
+    let expiry;
+    if (jwt) expiry = new Date(jwt.expiration * 1000);
 
-    // let today = new Date();
-    // if (expiry.getTime() < today.getTime()) {
-    let jwt = await fetch("https://fernway-api.herokuapp.com/token");
-
-    if (jwt.ok) {
-      jwt = await jwt.json();
-
-      await this.setState({
-        jwt
-      });
-    } else {
-      console.error("There was an issue fetching the JWT token...");
-      console.error(await jwt.text());
+    let today = new Date();
+    if (!jwt || expiry.getTime() < today.getTime()) {
+      jwt = await getToken(development ? 'http://localhost' : 'https://fernway.ca');
     }
-    //}
 
-    this.setState({ loading: false });
-    return jwt;
+    this.setState({ loading: false, jwt });
   };
 
   getPlants = async (query, jwt) => {
@@ -96,7 +80,7 @@ class AddPlants extends Component {
   };
 
   search = async () => {
-    this.getPlants(this.state.query, await this.getToken());
+    this.getPlants(this.state.query, await this.refreshToken());
   };
 
   renderToolbar = title => {
@@ -115,7 +99,7 @@ class AddPlants extends Component {
         key,
         plant,
         jwt,
-        getToken: this.getToken,
+        getToken: this.refreshToken,
         navigator: this.props.navigator
       }
     });
@@ -139,13 +123,17 @@ class AddPlants extends Component {
           </ListItem>
         </List>
         <List
-          style={{maxHeight: '-webkit-fill-available', overflowY: 'auto'}}
+          style={{ maxHeight: "-webkit-fill-available", overflowY: "auto" }}
           renderHeader={() => <ListHeader>Results</ListHeader>}
           dataSource={this.state.plants}
           renderRow={plant => {
             if (plant.common_name)
               return (
-                <ListItem key={plant.id} tappable onClick={() => this.gotoPlant(null, plant.id, plant)}>
+                <ListItem
+                  key={plant.id}
+                  tappable
+                  onClick={() => this.gotoPlant(null, plant.id, plant)}
+                >
                   {capitalize(plant.common_name)}
                 </ListItem>
               );
