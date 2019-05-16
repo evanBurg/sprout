@@ -2,7 +2,7 @@ export const token = "R0dGTXdVcng3Nk9DRk5DdlRrWWNNdz09";
 
 export const api = "https://fernway-api.herokuapp.com";
 
-export const development = false;
+export const development = true;
 
 export const getToken = async origin => {
   let jwt = await fetch(`${api}/token?origin=${origin}`);
