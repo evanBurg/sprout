@@ -24,3 +24,19 @@ export const capitalize = text => {
     .map(s => s.charAt(0).toUpperCase() + s.substring(1))
     .join(" ");
 };
+
+export const removeDuplicates = ( arr, prop ) => {
+  let obj = {};
+  for ( let i = 0, len = arr.length; i < len; i++ ){
+    if(!obj[arr[i][prop]]) obj[arr[i][prop]] = arr[i];
+  }
+  let newArr = [];
+  for ( let key in obj ) newArr.push(obj[key]);
+  return newArr;
+}
+
+// eslint-disable-next-line
+String.prototype.replaceAll = function(search, replacement) {
+  var target = this;
+  return target.replace(new RegExp(search, 'g'), replacement);
+};

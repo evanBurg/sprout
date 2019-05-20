@@ -9,7 +9,7 @@ import {
   Button,
   ProgressBar
 } from "react-onsenui";
-import { capitalize, getToken, development } from "../../util";
+import { capitalize, getToken, development, removeDuplicates } from "../../util";
 import AddPlantPage from "./AddPlantPage";
 
 class AddPlants extends Component {
@@ -20,7 +20,9 @@ class AddPlants extends Component {
       jwt: undefined,
       plants: [],
       query: "",
-      loading: false
+      loading: false,
+      page: 0,
+      pageSize: 100
     };
   }
 
@@ -43,36 +45,41 @@ class AddPlants extends Component {
     this.setState({ loading: false, jwt });
   };
 
-  getPlants = async (query) => {
-    let {jwt} = this.state;
+  getPlants = async (setState = true) => {
+    let {jwt, page, pageSize, query} = this.state;
     this.setState({ loading: true });
     let plants = [];
     if (query)
       plants = await fetch(
         `https://trefle.io/api/plants?q=${query}&token=${
           jwt.token
-        }&page_size=${100}`
+        }&page_size=${pageSize}&page=${page}`
       );
     else
       plants = await fetch(
-        `https://trefle.io/api/plants?token=${jwt.token}&page_size=${100}`
+        `https://trefle.io/api/plants?token=${jwt.token}&page_size=${pageSize}&page=${page}`
       );
 
-    if (plants.ok) {
+    if (plants.ok && setState) {
       plants = await plants.json();
 
       this.setState({
-        plants
+        plants: removeDuplicates(plants, 'common_name'),
+        loading: false
       });
+    } else if (plants.ok && !setState) {
+      this.setState({ loading: false });
+      plants = await plants.json();
+      return removeDuplicates(plants, 'common_name');
     } else {
       console.error("There was an issue fetching the plants...");
       console.error(await plants.text());
 
       this.setState({
-        plants: []
+        plants: [],
+        loading: false
       });
     }
-    this.setState({ loading: false });
   };
 
   changeQuery = async e => {
@@ -80,7 +87,8 @@ class AddPlants extends Component {
   };
 
   search = async () => {
-    this.getPlants(this.state.query, await this.refreshToken());
+    await this.refreshToken()
+    this.getPlants();
   };
 
   renderToolbar = title => {
@@ -99,11 +107,28 @@ class AddPlants extends Component {
         key,
         plant,
         jwt,
+        rooms: this.props.rooms,
         getToken: this.refreshToken,
         navigator: this.props.navigator
       }
     });
   };
+
+  handleScroll = (e) => {
+    const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    if (bottom) { 
+      this.setState({
+        page: this.state.page+1
+      }, async () => {
+        await this.refreshToken()
+        let nextPage = await this.getPlants(false);
+        let plants = [...this.state.plants, ...nextPage];
+        this.setState({
+          plants 
+        })
+      });
+    }
+  }
 
   render() {
     return (
@@ -128,6 +153,7 @@ class AddPlants extends Component {
           </ListItem>
         </List>
         <List
+          onScroll={this.handleScroll}
           style={{ maxHeight: "-webkit-fill-available", overflowY: "auto" }}
           renderHeader={() => <ListHeader>Results</ListHeader>}
           dataSource={this.state.plants}
