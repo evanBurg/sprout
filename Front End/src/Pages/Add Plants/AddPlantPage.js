@@ -13,6 +13,8 @@ import "./AddPlantPage.css";
 import { capitalize } from "../../util";
 import Select from "react-select/dist/react-select";
 
+const noImageSrc = process.env.NODE_ENV === "development" ? "https://smithssanitationsupply.ca/wp-content/uploads/2018/06/noimage-1.png" : "/img/noimage.png";
+
 class AddPlantPage extends Component {
   state = {
     details: {},
@@ -69,7 +71,7 @@ class AddPlantPage extends Component {
         if (objectKeys.hasOwnProperty(spec))
           text = specs[spec][objectKeys[spec]];
 
-        if (spec)
+        if (spec && text)
           elements.push(
             <p key={`key-${spec}`}>
               <strong>{capitalize(spec.replaceAll("_", " "))}</strong>:{" "}
@@ -97,7 +99,7 @@ class AddPlantPage extends Component {
       return (
         <img
           style={{ width: "100%" }}
-          src="https://smithssanitationsupply.ca/wp-content/uploads/2018/06/noimage-1.png"
+          src={noImageSrc}
           alt={capitalize(plant.common_name)}
         />
       );

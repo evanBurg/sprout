@@ -28,6 +28,7 @@ class Tabs extends React.Component {
     return (
       <Page>
         <Tabbar
+          swipeable
           renderTabs={this.renderTabs}
         />
       </Page>

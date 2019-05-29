@@ -3,20 +3,23 @@ import {
   Page,
   Toolbar,
   List,
-  ListItem,
   ListHeader,
   Fab,
-  Button,
+  Ripple,
   Icon,
-  PullHook
+  PullHook,
+  Row,
+  Col
 } from "react-onsenui";
 import ons from "onsenui";
-import { capitalize } from "../../util";
+import IconButton from "./IconButton";
+
+import { capitalize, development } from "../../util";
 class Home extends React.Component {
   state = {
     rooms: [],
     loading: true,
-    pullHookState: 'initial'
+    pullHookState: "initial"
   };
 
   renderToolbar = title => {
@@ -33,7 +36,7 @@ class Home extends React.Component {
     this.setState({
       rooms,
       loading: false,
-      pullHookState: 'initial'
+      pullHookState: "initial"
     });
   };
 
@@ -76,74 +79,163 @@ class Home extends React.Component {
   pullChange = event => {
     this.setState({
       pullHookState: event.state
-    })
-  }
+    });
+  };
 
-  handleLoad = async (done) => {
+  handleLoad = async done => {
     let rooms = await window.db.rooms.toArray();
     console.log(rooms);
-    this.setState({
-      rooms,
-      loading: false,
-      pullHookState: 'initial'
-    }, done);
-  }
+    this.setState(
+      {
+        rooms,
+        loading: false,
+        pullHookState: "initial"
+      },
+      done
+    );
+  };
+
+  getRandomImage = () => {
+    let imgNum = Math.floor(Math.random() * Math.floor(16)) + 1;
+    let imgSrc = development
+      ? `/img/plants/${imgNum}.png`
+      : `/sprout/img/plants/${imgNum}.png`;
+    return imgSrc;
+  };
+
+  generatePlantList = room => {
+    let rows = [];
+    let plants = room.plants;
+
+    let i = 0;
+    plants.forEach(plant => {
+      if (!rows[i]) rows[i] = [];
+
+      rows[i].push(plant);
+
+      //Want 3 plants per row
+      if (rows[i].length === 3) i++;
+    });
+
+    return rows.map((plants, index) => (
+      <Row
+        key={"plant-row-index-" + index + "-" + room.name}
+        verticalAlign="center"
+        style={{ justifyContent: "space-evenly", alignItems: "center" }}
+      >
+        {plants.map((plant, index) => (
+          <Col
+            key={"plant-col-index-" + index + "-" + room.name}
+            style={{
+              justifyContent: "space-evenly",
+              alignItems: "center",
+              textAlign: "center",
+              padding: 5
+            }}
+          >
+            <img src={this.getRandomImage()} style={{ width: 80 }} alt={plant.common_name} />
+            <p>{capitalize(plant.common_name)}</p>
+          </Col>
+        ))}
+      </Row>
+    ));
+  };
+
+  renderFab = () => {
+    return (
+      <Fab position="bottom right" onClick={this.createRoom}>
+        <Icon icon="fa-plus" size={26} style={{ verticalAlign: "middle" }} />
+      </Fab>
+    );
+  };
 
   render() {
     const state = this.state.pullHookState;
-    let content = '';
-    if (state === 'initial') {
-      content = 'Pull to Refresh';
-    }
-    else if (state === 'preaction') {
-      content = 'Release to Refresh';
-    }
-    else {
-      content = <span><Icon size={35} spin={true} icon='ion-load-d'></Icon> Loading data...</span>;
+    let content = "";
+    if (state === "initial") {
+      content = "Pull to Refresh";
+    } else if (state === "preaction") {
+      content = "Release to Refresh";
+    } else {
+      content = (
+        <span>
+          <Icon size={35} spin={true} icon="ion-load-d" /> Loading data...
+        </span>
+      );
     }
 
     return (
-      <Page renderToolbar={() => this.renderToolbar("Home")}>
+      <Page renderToolbar={() => this.renderToolbar("Home")} renderFixed={this.renderFab}>
         <PullHook onChange={this.pullChange} onLoad={this.handleLoad}>
-        {content}
+          {content}
         </PullHook>
+        <h1 style={{ textAlign: "center" }}>Home Name</h1>
+        <Row
+          verticalAlign="center"
+          style={{ justifyContent: "space-evenly", alignItems: "center" }}
+        >
+          <Col
+            style={{
+              justifyContent: "space-evenly",
+              alignItems: "center",
+              textAlign: "center"
+            }}
+          >
+            <IconButton
+              icon="md-plus-circle"
+              text="Add Plant"
+              color="#4CAF50"
+            />
+          </Col>
+          <Col
+            style={{
+              justifyContent: "space-evenly",
+              alignItems: "center",
+              textAlign: "center"
+            }}
+          >
+            <IconButton icon="md-refresh" text="Reset" color="#F44336" />
+          </Col>
+          <Col
+            style={{
+              justifyContent: "space-evenly",
+              alignItems: "center",
+              textAlign: "center"
+            }}
+          >
+            <IconButton icon="md-settings" text="Settings" color="#424242" />
+          </Col>
+        </Row>
         <List
           renderHeader={() => <ListHeader>Rooms</ListHeader>}
           dataSource={this.state.rooms}
           renderRow={room => {
             return (
-              <ListItem
-                key={room.id}
-                style={{ justifyContent: "space-between" }}
-                tappable
-                expandable
-              >
-                <div className="left">{room.name}</div>
-                <div className="right">
-                  <Button
-                    style={{ backgroundColor: "#F44336" }}
-                    onClick={() => this.deleteRoom(room.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-                <div className="expandable-content">
-                  {room.plants.length > 0 ? (
-                    room.plants.map(plant => (
-                      <p>{capitalize(plant.common_name)}</p>
-                    ))
-                  ) : (
-                    <p>No plants in this room.</p>
-                  )}
-                </div>
-              </ListItem>
+              <React.Fragment key={room.id}>
+                <Row>
+                  <Col>
+                    <h3 style={{ textAlign: "center" }} onClick={() => this.deleteRoom(room.id)}>
+                    {room.name || "error"}
+                    <Ripple/>
+                    </h3>
+                    <p
+                      style={{
+                        textAlign: "center",
+                        color: "#acacac",
+                        marginTop: -12,
+                        fontSize: 14
+                      }}
+                    >
+                      {room.plants.length} plant
+                      {room.plants.length === 1 ? "" : "s"}
+                    </p>
+                  </Col>
+                </Row>
+                {this.generatePlantList(room)}
+              </React.Fragment>
             );
           }}
         />
-
-        <Fab position="bottom right" onClick={this.createRoom}>
-          <Icon icon="fa-plus" size={26} style={{ verticalAlign: "middle" }} />
-        </Fab>
       </Page>
     );
   }
