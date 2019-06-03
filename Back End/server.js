@@ -69,7 +69,7 @@ app.get("/plant/:id", (req, res) => {
     });
 });
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 6969;
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });

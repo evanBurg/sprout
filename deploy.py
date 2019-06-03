@@ -32,6 +32,6 @@ copyFolderContents("./build", "../../www/sprout/")
 
 os.chdir("../Back End")
 os.system("npm install")
-os.system("fuser -k 6969/tcp")
 removeFolderContents("../../www/sprout/backend/")
 copyFolderContents("./", "../../www/sprout/backend/")
+os.system("pm2 restart sprout-backend")
