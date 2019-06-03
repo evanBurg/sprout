@@ -3,6 +3,13 @@ const app = express();
 const axios = require("axios");
 const bodyParser = require("body-parser");
 const token = "R0dGTXdVcng3Nk9DRk5DdlRrWWNNdz09";
+const https = require("https");
+const fs = require("fs");
+
+const options = {
+    key: fs.readFileSync("./key.pem"),
+    cert: fs.readFileSync("./chain.pem")
+}
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -18,10 +25,12 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  console.log(`Request @ ${new Date() + 3600000 * -5.0}`);
-  console.log(`Body @ ${req.body}`);
-  console.log(`Query @ ${req.query}`);
-  console.log(`Params @ ${req.params}`);
+  console.log('---------------------');
+  console.log(`Request @ ${String(new Date() + 3600000 * -5.0)}`);
+  console.log(`Body @ ${JSON.stringify(req.body, null, 2)}`);
+  console.log(`Query @ ${JSON.stringify(req.query, null, 2)}`);
+  console.log(`Params @ ${JSON.stringify(req.params, null, 2)}`);
+  console.log('---------------------');
   next();
 });
 
@@ -69,7 +78,5 @@ app.get("/plant/:id", (req, res) => {
     });
 });
 
-const port = process.env.PORT || 6969;
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
+const port = 6969
+https.createServer(options, app).listen(port);
