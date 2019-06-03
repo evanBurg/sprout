@@ -11,7 +11,7 @@ import {
 } from "react-onsenui";
 import "./AddPlantPage.css";
 import { capitalize } from "../../util";
-import Select from "react-select/dist/react-select";
+import Select from "react-select";
 
 const noImageSrc = process.env.NODE_ENV === "development" ? "https://smithssanitationsupply.ca/wp-content/uploads/2018/06/noimage-1.png" : "/img/noimage.png";
 
