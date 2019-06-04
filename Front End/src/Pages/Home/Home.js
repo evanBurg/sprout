@@ -13,11 +13,11 @@ import {
 } from "react-onsenui";
 import ons from "onsenui";
 import IconButton from "./IconButton";
+import {Context} from "../../App";
 
 import { capitalize, development } from "../../util";
 class Home extends React.Component {
   state = {
-    rooms: [],
     loading: true,
     pullHookState: "initial"
   };
@@ -29,20 +29,6 @@ class Home extends React.Component {
       </Toolbar>
     );
   };
-
-  getData = async () => {
-    let rooms = await window.db.rooms.toArray();
-    console.log(rooms);
-    this.setState({
-      rooms,
-      loading: false,
-      pullHookState: "initial"
-    });
-  };
-
-  componentDidMount() {
-    this.getData();
-  }
 
   createRoom = () => {
     ons.notification.prompt({
@@ -82,13 +68,10 @@ class Home extends React.Component {
     });
   };
 
-  handleLoad = async done => {
-    let rooms = await window.db.rooms.toArray();
-    console.log(rooms);
+  handleLoad = async (done, context) => {
+    await context.refresh();
     this.setState(
       {
-        rooms,
-        loading: false,
         pullHookState: "initial"
       },
       done
@@ -165,78 +148,82 @@ class Home extends React.Component {
     }
 
     return (
-      <Page renderToolbar={() => this.renderToolbar("Home")} renderFixed={this.renderFab}>
-        <PullHook onChange={this.pullChange} onLoad={this.handleLoad}>
-          {content}
-        </PullHook>
-        <h1 style={{ textAlign: "center" }}>Home Name</h1>
-        <Row
-          verticalAlign="center"
-          style={{ justifyContent: "space-evenly", alignItems: "center" }}
-        >
-          <Col
-            style={{
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              textAlign: "center"
-            }}
+      <Context.Consumer>
+        {context =>
+          <Page renderToolbar={() => this.renderToolbar("Home")} renderFixed={this.renderFab}>
+          <PullHook onChange={this.pullChange} onLoad={done => this.handleLoad(done, context)}>
+            {content}
+          </PullHook>
+          <h1 style={{ textAlign: "center" }}>Home Name</h1>
+          <Row
+            verticalAlign="center"
+            style={{ justifyContent: "space-evenly", alignItems: "center" }}
           >
-            <IconButton
-              icon="md-plus-circle"
-              text="Add Plant"
-              color="#4CAF50"
-            />
-          </Col>
-          <Col
-            style={{
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              textAlign: "center"
+            <Col
+              style={{
+                justifyContent: "space-evenly",
+                alignItems: "center",
+                textAlign: "center"
+              }}
+            >
+              <IconButton
+                icon="md-plus-circle"
+                text="Add Plant"
+                color="#4CAF50"
+              />
+            </Col>
+            <Col
+              style={{
+                justifyContent: "space-evenly",
+                alignItems: "center",
+                textAlign: "center"
+              }}
+            >
+              <IconButton icon="md-refresh" text="Reset" color="#F44336" />
+            </Col>
+            <Col
+              style={{
+                justifyContent: "space-evenly",
+                alignItems: "center",
+                textAlign: "center"
+              }}
+            >
+              <IconButton icon="md-settings" text="Settings" color="#424242" />
+            </Col>
+          </Row>
+          <List
+            renderHeader={() => <ListHeader>Rooms</ListHeader>}
+            dataSource={context.rooms}
+            renderRow={room => {
+              return (
+                <React.Fragment key={room.id}>
+                  <Row>
+                    <Col>
+                      <h3 style={{ textAlign: "center" }} onClick={() => this.deleteRoom(room.id)}>
+                      {room.name || "error"}
+                      <Ripple/>
+                      </h3>
+                      <p
+                        style={{
+                          textAlign: "center",
+                          color: "#acacac",
+                          marginTop: -12,
+                          fontSize: 14
+                        }}
+                      >
+                        {room.plants.length} plant
+                        {room.plants.length === 1 ? "" : "s"}
+                      </p>
+                    </Col>
+                  </Row>
+                  {this.generatePlantList(room)}
+                </React.Fragment>
+              );
             }}
-          >
-            <IconButton icon="md-refresh" text="Reset" color="#F44336" />
-          </Col>
-          <Col
-            style={{
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              textAlign: "center"
-            }}
-          >
-            <IconButton icon="md-settings" text="Settings" color="#424242" />
-          </Col>
-        </Row>
-        <List
-          renderHeader={() => <ListHeader>Rooms</ListHeader>}
-          dataSource={this.state.rooms}
-          renderRow={room => {
-            return (
-              <React.Fragment key={room.id}>
-                <Row>
-                  <Col>
-                    <h3 style={{ textAlign: "center" }} onClick={() => this.deleteRoom(room.id)}>
-                    {room.name || "error"}
-                    <Ripple/>
-                    </h3>
-                    <p
-                      style={{
-                        textAlign: "center",
-                        color: "#acacac",
-                        marginTop: -12,
-                        fontSize: 14
-                      }}
-                    >
-                      {room.plants.length} plant
-                      {room.plants.length === 1 ? "" : "s"}
-                    </p>
-                  </Col>
-                </Row>
-                {this.generatePlantList(room)}
-              </React.Fragment>
-            );
-          }}
-        />
-      </Page>
+          />
+        </Page>
+        }
+      </Context.Consumer>
     );
   }
 }

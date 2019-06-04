@@ -12,6 +12,7 @@ import {
 import "./AddPlantPage.css";
 import { capitalize, api } from "../../util";
 import Select from "react-select";
+import {Context} from "../../App";
 
 const noImageSrc = process.env.NODE_ENV === "development" ? "https://smithssanitationsupply.ca/wp-content/uploads/2018/06/noimage-1.png" : "/img/noimage.png";
 
@@ -112,7 +113,7 @@ class AddPlantPage extends Component {
     });
   };
 
-  addToRoom = async () => {
+  addToRoom = async context => {
     this.setState({
       adding: true
     })
@@ -123,6 +124,7 @@ class AddPlantPage extends Component {
     await window.db.rooms.where({id: selectedRoom.value}).modify(room);
 
     this.props.navigator.popPage();
+    context.refresh();
     this.setState({
       adding: false
     })
@@ -135,45 +137,49 @@ class AddPlantPage extends Component {
 
     if (!loading) {
       return (
-        <Page renderToolbar={() => this.renderToolbar(name)}>
-         {this.state.adding && <ProgressBar indeterminate />}
-          <Card>
-            <h1>{name}</h1>
-            {this.renderImage(details)}
-            {details.duration && <p>{capitalize(details.duration)}</p>}
-            <p>{plant.scientific_name || ""}</p>
-            {details && details.family && <p>{details.family.name}</p>}
-
-            <div className="specs-expand" onClick={this.toggleSpecs}>
-              <Ripple />
-              <p>
-                <strong>Specifications</strong>
-              </p>
-              <Icon
-                style={{
-                  transition: "all 0.5s",
-                  transform: this.state.specsShown ? "unset" : "rotate(180deg)"
-                }}
-                size={{ default: 20 }}
-                icon={{ default: "chevron-down" }}
-              />
-            </div>
-            <div
-              className={`specs-details ${
-                this.state.specsShown ? "open" : "closed"
-              }`}
-            >
-              {this.renderSpecifications(details.main_species.specifications)}
-            </div>
-            <hr />
-            <Select
-              value={this.state.selectedRoom}
-              onChange={(room) => this.setState({selectedRoom: room})}
-              options={this.state.rooms}
-            />
-            <Button onClick={this.addToRoom} style={{ marginTop: 7 }} modifier="large--cta">Add to Room</Button>
-          </Card>
-        </Page>
+        <Context.Consumer>
+          {context =>
+            <Page renderToolbar={() => this.renderToolbar(name)}>
+            {this.state.adding && <ProgressBar indeterminate />}
+             <Card>
+               <h1>{name}</h1>
+               {this.renderImage(details)}
+               {details.duration && <p>{capitalize(details.duration)}</p>}
+               <p>{plant.scientific_name || ""}</p>
+               {details && details.family && <p>{details.family.name}</p>}
+   
+               <div className="specs-expand" onClick={this.toggleSpecs}>
+                 <Ripple />
+                 <p>
+                   <strong>Specifications</strong>
+                 </p>
+                 <Icon
+                   style={{
+                     transition: "all 0.5s",
+                     transform: this.state.specsShown ? "unset" : "rotate(180deg)"
+                   }}
+                   size={{ default: 20 }}
+                   icon={{ default: "chevron-down" }}
+                 />
+               </div>
+               <div
+                 className={`specs-details ${
+                   this.state.specsShown ? "open" : "closed"
+                 }`}
+               >
+                 {this.renderSpecifications(details.main_species.specifications)}
+               </div>
+               <hr />
+               <Select
+                 value={this.state.selectedRoom}
+                 onChange={(room) => this.setState({selectedRoom: room})}
+                 options={this.state.rooms}
+               />
+               <Button onClick={() => this.addToRoom(context)} style={{ marginTop: 7 }} modifier="large--cta">Add to Room</Button>
+             </Card>
+           </Page>
+          }
+        </Context.Consumer>
       );
     } else {
       return (
