@@ -20,6 +20,7 @@ client = MongoClient()
 client = MongoClient("mongodb://localhost:27017/")
 db = client.sprout  # retrieve database
 rwd_table = db.raw_plant_data  # retrieve collection/table
+rwd_table.drop()
 
 for plant in blantcollection:
     post_id = rwd_table.insert_one(plant).inserted_id
