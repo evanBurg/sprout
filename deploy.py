@@ -1,37 +1,37 @@
-import os, shutil
-
-def removeFolderContents(folder):
-    for the_file in os.listdir(folder):
-        file_path = os.path.join(folder, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            print(e)
-
-def copyFolderContents(source, dest):
-    for the_file in os.listdir(source):
-        file_path = os.path.join(source, the_file)
-        try:
-            if os.path.isfile(file_path):
-                shutil.copy(file_path, dest)
-        except Exception as e:
-            print(e)
-
+import os, sys
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+os.system("rm -rf ../public_html/sprout/*")
+
+if not os.path.isdir("../public_html/sprout"):
+    os.system("mkdir ../public_html/sprout")
+
+if not os.path.isdir("../public_html/sprout/backend"):
+    os.system("mkdir ../public_html/sprout/backend")
+
 
 os.system("git pull")
 
-os.chdir("./Front End")
-os.system("npm install")
-os.system("npm run build")
+def buildFrontEnd():
+    os.chdir("./Front End")
+    os.system("npm install")
+    os.system("npm run build")
+    os.chdir("../")
+    os.system("cp -r ./Front\ End/build/* ../public_html/sprout/")
 
-removeFolderContents("../../public_html/sprout/")
-copyFolderContents("./build", "../../public_html/sprout/")
+def buildBackEnd(): 
+    os.chdir("./Back End")
+    os.system("npm install")
+    os.chdir("../")
+    os.system("cp -r ./Back\ End/* ../public_html/sprout/backend/")
+    os.system("pm2 restart sprout-backend")
 
-os.chdir("../Back End")
-os.system("npm install")
-removeFolderContents("../../public_html/sprout/backend/")
-copyFolderContents("./", "../../public_html/sprout/backend/")
-os.system("pm2 restart sprout-backend")
+if "-f" or "--front-end" in sys.argv:
+    buildFrontEnd()
+elif len(sys.argv) is 1:
+    buildFrontEnd()
+
+if "-b" or "--back-end" in sys.argv:
+    buildBackEnd()
+elif len(sys.argv) is 1:
+    buildBackEnd()
