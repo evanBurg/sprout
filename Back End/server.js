@@ -81,7 +81,7 @@ app.get(generateRoute("/plant/:id"), (req, res) => {
 
 const port = 6969
 https.createServer(options, app).listen(port);
-const io = require('socket-io')(https);
+const io = require('socket.io')(https);
 io.on('connection', function(socket){
   setTimeout(() => {
     socket.emit({
