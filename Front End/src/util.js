@@ -1,6 +1,6 @@
 export const token = "R0dGTXdVcng3Nk9DRk5DdlRrWWNNdz09";
 
-export const api = "https://evenburgers.com:6969";
+export const api = "https://evenburgers.com/sprout-api";
 
 export const development = process.env.NODE_ENV === "development";
 

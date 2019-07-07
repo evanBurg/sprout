@@ -5,7 +5,8 @@ const bodyParser = require("body-parser");
 const token = "R0dGTXdVcng3Nk9DRk5DdlRrWWNNdz09";
 const https = require("https");
 const fs = require("fs");
-
+const proxyPrefix = "/sprout-api";
+const generateRoute = (route) => `${proxyPrefix}${route}`;
 const options = {
     key: fs.readFileSync("./key.pem"),
     cert: fs.readFileSync("./chain.pem")
@@ -34,7 +35,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/token", (req, res) => {
+app.get(generateRoute("/token"), (req, res) => {
   axios
     .post(
       `https://trefle.io/api/auth/claim?token=${token}&origin=${
@@ -55,7 +56,7 @@ app.get("/token", (req, res) => {
     });
 });
 
-app.get("/plant/:id", (req, res) => {
+app.get(generateRoute("/plant/:id"), (req, res) => {
   if (!req.params.id) {
     res.status(400);
     res.send({ error: "You must specify and ID" });
