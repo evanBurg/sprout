@@ -1,12 +1,12 @@
 import React from "react";
-
 import { Page, Tabbar, Tab, Navigator } from "react-onsenui";
-
 import Home from "./Pages/Home/Home";
 import AddPlants from "./Pages/Add Plants/AddPlants";
+import io from 'socket.io-client'
+import ToastContainer from "./Notifications/ToastContainer";
+import { api } from "./util";
 
 const AppContext = React.createContext();
-
 class Tabs extends React.Component {
   renderTabs = () => {
     return [
@@ -33,7 +33,9 @@ class Tabs extends React.Component {
 class App extends React.Component {
   state = {
     rooms: [],
-    loading: false
+    loading: false,
+    socket: io(api),
+    toasts: []
   };
 
   getData = async () => {
@@ -50,6 +52,14 @@ class App extends React.Component {
 
   componentDidMount() {
     this.getData();
+
+    this.state.socket.on('toast', (toast) => {
+      if(toast.sound){
+        new Audio(toast.sound).play();
+      }
+
+      this.setState(state => ({toasts: [...state.toasts, toast]}));
+    })
   }
 
   renderPage(route, navigator) {
@@ -60,13 +70,14 @@ class App extends React.Component {
   }
 
   render() {
-    let {rooms} = this.state
+    let {rooms, toasts} = this.state
     return (
       <AppContext.Provider value={{rooms, refresh: this.getData}}>
         <Navigator
           initialRoute={{ comp: Tabs, props: { key: "tabs" } }}
           renderPage={this.renderPage}
         />
+        <ToastContainer toasts={toasts}/>
       </AppContext.Provider>
     );
   }
