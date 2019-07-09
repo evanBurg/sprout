@@ -8,7 +8,7 @@ if not os.path.isdir("../public_html/sprout"):
 
 if not os.path.isdir("../public_html/sprout/backend"):
     os.system("mkdir ../public_html/sprout/backend")
-
+    os.system("mkdir ../public_html/sprout/backend/node_modules")
 
 os.system("git pull")
 
@@ -24,6 +24,7 @@ def buildBackEnd():
     os.system("npm install")
     os.chdir("../")
     os.system("cp -r ./Back\ End/* ../public_html/sprout/backend/")
+    os.system("cp -r ./Back\ End/node_modules/* ../public_html/sprout/backend/node_modules/")
     os.system("pm2 restart sprout-backend")
 
 if "-f" or "--front-end" in sys.argv:
