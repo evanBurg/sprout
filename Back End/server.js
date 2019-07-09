@@ -81,11 +81,18 @@ app.get(generateRoute("/plant/:id"), (req, res) => {
 
 const port = 6969
 https.createServer(options, app).listen(port);
-const io = require('socket.io')(https);
-io.on('connection', function(socket){
+const io = require('socket.io').listen(server);
+const all = io.of('/sprout-api')
+all.on('connection', function(socket){
   setTimeout(() => {
-    socket.emit({
+    console.log("-------------");
+    console.log("Sending toast...");
+
+    socket.emit("toast", {
         msg: "Testing toasts!"
     })
+
+    console.log("Toast sent.");
   }, 2000)
 });
+
