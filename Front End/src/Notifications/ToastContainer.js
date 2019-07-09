@@ -33,17 +33,17 @@ class ToastContainer extends Component {
     let { styles } = this.state;
     let { toasts } = this.props;
 
-    toasts = []
+    if(!toasts)
+        toasts = []
+   
     return (
-      <Context.Consumer>
-        {context => <div id="toast-container" style={styles.container}>
+        <div id="toast-container" style={styles.container}>
             {toasts.map(toast => {
                 return <Toast animation={toast.animation} animationOptions={toast.animationOptions} timeout={toast.timeout}>
                     {toast.msg}
                 </Toast>
             })}
-        </div>}
-      </Context.Consumer>
+        </div>
     );
   }
 }
