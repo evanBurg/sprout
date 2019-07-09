@@ -36,7 +36,7 @@ class ToastContainer extends Component {
     toasts = []
     return (
       <Context.Consumer>
-        {context => <div style={styles.container}>
+        {context => <div id="toast-container" style={styles.container}>
             {toasts.map(toast => {
                 return <Toast animation={toast.animation} animationOptions={toast.animationOptions} timeout={toast.timeout}>
                     {toast.msg}
